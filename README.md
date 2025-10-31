@@ -3,8 +3,7 @@
 A unified, transparent, and democratic governance platform serving humanity, corporations, and ecosystems.
 
 ## Quick Links
-- [Abstract](docs/01-foundations/abstract.md)
-- [Executive Summary](docs/01-foundations/executive-summary.md)
+- [TOC, Executive Summary, Abstract](docs/01-foundations/Table of Contents, Executive Summary, and Bitgov Abstract.md)
 - [Foundational Principles](docs/01-foundations/foundational-principles.md)
 - [The Six Pillars](docs/02-architecture/six-pillars.md)
 
