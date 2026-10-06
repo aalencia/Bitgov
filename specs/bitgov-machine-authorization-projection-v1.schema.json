@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bitgov.example/mas-cr1/bitgov-machine-authorization-projection-v1.schema.json",
+  "title": "BitGov Machine Authorization Projection V1 (MAS-I1 proving slice)",
+  "description": "Structural schema for one top-level AuthorizationProjection object. Structural validation covers shape, required members, types, and unknown-field rejection only. Closed enum membership, version compatibility, conditional presence, and cross-field consistency are enforced by the semantic validator (reference_proving_slice.py), preserving the failure taxonomy: STRUCTURAL_MALFORMED vs SEMANTIC_INCONSISTENT vs VERSION_INCOMPATIBLE vs UNKNOWN_REQUIRED. Non-normative reference implementation; Python harness only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mas_cr1_version",
+    "schema_version",
+    "projection_identity",
+    "governed_state_reference",
+    "authorization_outcome",
+    "request_binding",
+    "constitutional_applicability",
+    "finality_vector",
+    "lifecycle_state",
+    "execution_reliance_effect",
+    "temporal_evaluation_and_currency",
+    "predicate_assertions"
+  ],
+  "properties": {
+    "mas_cr1_version": {
+      "type": "string",
+      "description": "Concrete-representation tranche marker. Expected value '1'; compatibility checked semantically so mismatch classifies VERSION_INCOMPATIBLE."
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Projection schema version. Expected value '1'; compatibility checked semantically."
+    },
+    "projection_identity": {
+      "type": "string",
+      "description": "Opaque UUIDv7, lowercase canonical spelling. Opaque: NOT content-derived; distinct from governed-state, transport, SCM, and execution identities.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "governed_state_reference": { "$ref": "#/$defs/GovernedStateReference" },
+    "authorization_outcome": {
+      "type": "string",
+      "description": "Closed set: AUTHORIZED | DENIED | NO-GOVERNED-DECISION | UNRESOLVED. Membership enforced semantically."
+    },
+    "request_binding": { "$ref": "#/$defs/RequestBinding" },
+    "constitutional_applicability": {
+      "type": "string",
+      "description": "Closed set: NOT_APPLICABLE | APPLICABLE | UNRESOLVED."
+    },
+    "constitutional_disposition": {
+      "type": "string",
+      "description": "Closed set: ADMISSIBLE | BLOCKED | UNRESOLVED. Conditionally present iff constitutional_applicability == APPLICABLE (semantic rule)."
+    },
+    "finality_vector": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/FinalityRequirement" }
+    },
+    "finality_aggregate": {
+      "type": "string",
+      "description": "Closed set: FINAL | NOT_FINAL. Optional carrier; when present must agree with finality_vector (semantic rule)."
+    },
+    "lifecycle_state": {
+      "type": "string",
+      "description": "Closed set: ACTIVE | SUPERSEDED | REVOKED | INVALIDATED | EXPIRED."
+    },
+    "lifecycle_transition": { "$ref": "#/$defs/LifecycleTransition" },
+    "execution_reliance_effect": {
+      "type": "string",
+      "description": "Closed set: RELIANCE_PERMITTED | RELIANCE_PROHIBITED | EFFECT_UNRESOLVED | EFFECT_NOT_APPLICABLE."
+    },
+    "temporal_evaluation_and_currency": { "$ref": "#/$defs/TemporalEvaluationAndCurrency" },
+    "predicate_assertions": { "$ref": "#/$defs/PredicateAssertions" },
+    "context_scope_detail": { "$ref": "#/$defs/ContextScopeDetail" },
+    "appeal_state": { "$ref": "#/$defs/AppealState" },
+    "appeal_effect": { "$ref": "#/$defs/GovernedProcessEffect" },
+    "escalation_state": { "$ref": "#/$defs/EscalationState" },
+    "escalation_effect": { "$ref": "#/$defs/GovernedProcessEffect" },
+    "constraints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Constraint" }
+    },
+    "rules_relied_upon": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/RuleReference" }
+    },
+    "absence_evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/AbsenceEvidence" }
+    },
+    "authority_lineage": { "$ref": "#/$defs/AuthorityLineage" },
+    "representation_binding": { "$ref": "#/$defs/RepresentationBinding" },
+    "execution_agent_identity": { "$ref": "#/$defs/ExecutionAgentIdentity" },
+    "unresolved_reasons": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/UnresolvedReason" }
+    }
+  },
+  "$defs": {
+    "BindingLeg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity"],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque governed identity. Compared by exact equality of parsed Unicode scalar sequence only: no NFC/NFKC, no case folding, no trimming, no locale normalization."
+        }
+      }
+    },
+    "BindingLegWithDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity"],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque governed identity; exact opaque equality only."
+        },
+        "governed_detail_reference": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional governed detail reference permitted only on context/scope legs."
+        }
+      }
+    },
+    "RequestBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Exact binding legs: principal, action, resource, context, scope.",
+      "required": ["principal", "action", "resource", "context", "scope"],
+      "properties": {
+        "principal": { "$ref": "#/$defs/BindingLeg" },
+        "action": { "$ref": "#/$defs/BindingLeg" },
+        "resource": { "$ref": "#/$defs/BindingLeg" },
+        "context": { "$ref": "#/$defs/BindingLegWithDetail" },
+        "scope": { "$ref": "#/$defs/BindingLegWithDetail" }
+      }
+    },
+    "FinalityRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement", "state"],
+      "properties": {
+        "requirement": { "type": "string", "minLength": 1 },
+        "state": {
+          "type": "string",
+          "description": "Closed set: NOT_APPLICABLE | REQUIRED_AND_SATISFIED | REQUIRED_AND_UNRESOLVED."
+        }
+      }
+    },
+    "Constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Carried enforcement constraint. constraint_type is an open string: the reference Aegis checker enforces only the TEST_FIXTURE_ONLY allowlist subtype and fails closed on any unknown subtype. The TEST_FIXTURE_ONLY subtype is harness-only and is NOT a normative BitGov enum, policy, or architecture addition.",
+      "required": ["constraint_type", "statement"],
+      "properties": {
+        "constraint_type": { "type": "string", "minLength": 1 },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque governed constraint statement carried for enforcement; never invented by GWO/Aegis."
+        },
+        "restriction": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Machine-checkable parameters; meaningful only for the TEST_FIXTURE_ONLY harness subtype.",
+          "required": ["field", "permitted_identities"],
+          "properties": {
+            "field": { "type": "string", "minLength": 1 },
+            "permitted_identities": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "RepresentationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Present iff predicate_assertions.representation_participates == TRUE.",
+      "required": ["principal_identity", "representative_identity", "mandate_reference"],
+      "properties": {
+        "principal_identity": { "type": "string", "minLength": 1 },
+        "representative_identity": { "type": "string", "minLength": 1 },
+        "mandate_reference": { "type": "string", "minLength": 1 },
+        "provenance_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "UnresolvedReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason_key"],
+      "properties": {
+        "reason_key": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string" }
+      }
+    },
+    "GovernedProcessEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Carried governed appeal/escalation effect. Closed set: NOT_APPLICABLE | UNRESOLVED | ESTABLISHED.",
+      "required": ["effect"],
+      "properties": {
+        "effect": { "type": "string" },
+        "effect_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "RuleReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_identity", "version", "applicability"],
+      "properties": {
+        "rule_identity": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "applicability": {
+          "type": "string",
+          "description": "Closed set: APPLICABLE | NOT_APPLICABLE | UNRESOLVED."
+        },
+        "authority_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "AuthorityLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Closed CR1-R1 lineage: exact four members. Envelope references are never lineage; authority_reference / basis_reference are not valid substitutes.",
+      "required": ["rule_reference", "rule_version", "authority_basis", "lineage_reference"],
+      "properties": {
+        "rule_reference": { "type": "string", "minLength": 1 },
+        "rule_version": { "type": "string", "minLength": 1 },
+        "authority_basis": { "type": "string", "minLength": 1 },
+        "lineage_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "TemporalEvaluationAndCurrency": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "evaluation_point is RFC3339 with explicit timezone/offset (shape checked semantically). currency_state closed set: CURRENCY_CURRENT | CURRENCY_STALE | CURRENCY_UNKNOWN_REQUIRED. temporal_bounds_reference is an opaque governed reference, required iff predicate_assertions.governed_temporal_rules_apply == TRUE. STALE currency is distinct from LifecycleState; no TTL, polling, or clock policy is specified.",
+      "required": ["evaluation_point", "currency_state"],
+      "properties": {
+        "evaluation_point": { "type": "string", "minLength": 1 },
+        "temporal_bounds_reference": { "type": "string", "minLength": 1 },
+        "currency_state": { "type": "string" }
+      }
+    },
+    "ExecutionAgentIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Present iff predicate_assertions.agent_specific == TRUE. Closed comparison methods: OPAQUE_EXACT | GOVERNED_RESOLVER. resolver_reference required iff method is GOVERNED_RESOLVER and absent iff OPAQUE_EXACT (semantic rule).",
+      "required": ["agent_identity", "comparison_method"],
+      "properties": {
+        "agent_identity": { "type": "string", "minLength": 1 },
+        "comparison_method": { "type": "string" },
+        "resolver_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "GovernedStateReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Opaque governed-state reference. Governed-state identity != SCM identity; no hash/ledger/storage representation required.",
+      "required": ["reference"],
+      "properties": {
+        "reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "PredicateAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One predicate assertion. value closed set: TRUE | FALSE | UNRESOLVED. determination_reference always required. basis_unknown, when true, permitted only when value == UNRESOLVED. lineage (AuthorityLineage) always required.",
+      "required": ["value", "determination_reference", "lineage"],
+      "properties": {
+        "value": { "type": "string" },
+        "determination_reference": { "type": "string", "minLength": 1 },
+        "basis_unknown": { "type": "boolean" },
+        "lineage": { "$ref": "#/$defs/AuthorityLineage" }
+      }
+    },
+    "PredicateAssertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Always required; exactly these eight assertions. Conditional presence of projection fields is decided from these values, never from field presence, caller guess, or GWO/Aegis reconstruction.",
+      "required": [
+        "authorization_bounds_exist",
+        "representation_participates",
+        "agent_specific",
+        "appeal_applicability",
+        "escalation_applicability",
+        "governed_basis_exists",
+        "evaluation_had_scope",
+        "governed_temporal_rules_apply"
+      ],
+      "properties": {
+        "authorization_bounds_exist": { "$ref": "#/$defs/PredicateAssertion" },
+        "representation_participates": { "$ref": "#/$defs/PredicateAssertion" },
+        "agent_specific": { "$ref": "#/$defs/PredicateAssertion" },
+        "appeal_applicability": { "$ref": "#/$defs/PredicateAssertion" },
+        "escalation_applicability": { "$ref": "#/$defs/PredicateAssertion" },
+        "governed_basis_exists": { "$ref": "#/$defs/PredicateAssertion" },
+        "evaluation_had_scope": { "$ref": "#/$defs/PredicateAssertion" },
+        "governed_temporal_rules_apply": { "$ref": "#/$defs/PredicateAssertion" }
+      }
+    },
+    "ContextScopeDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Present iff predicate_assertions.evaluation_had_scope == TRUE.",
+      "properties": {
+        "context_reference": { "type": "string", "minLength": 1 },
+        "scope_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "AppealState": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Opaque appeal state references; no governance effect inferred from filing/pendency. Present (with appeal_effect) iff predicate_assertions.appeal_applicability == TRUE.",
+      "required": ["appeal_reference"],
+      "properties": {
+        "appeal_reference": { "type": "string", "minLength": 1 },
+        "status_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "EscalationState": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Opaque escalation state references. Present (with escalation_effect) iff predicate_assertions.escalation_applicability == TRUE.",
+      "required": ["escalation_reference"],
+      "properties": {
+        "escalation_reference": { "type": "string", "minLength": 1 },
+        "status_reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "AbsenceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Closed CR1-R1 absence determination. finding closed set: GOVERNED_ABSENCE_FOUND | GOVERNED_ABSENCE_UNRESOLVED (membership enforced semantically). No caller prose assertion substitutes for this structure.",
+      "required": ["finding", "applicability_determination_reference", "scope_reference", "lineage"],
+      "properties": {
+        "finding": { "type": "string" },
+        "applicability_determination_reference": { "type": "string", "minLength": 1 },
+        "scope_reference": { "type": "string", "minLength": 1 },
+        "lineage": { "$ref": "#/$defs/AuthorityLineage" }
+      }
+    },
+    "LifecycleTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional lifecycle transition record. Supsersession/revocation/invalidation semantics per governed rules; invalidation is not history deletion.",
+      "required": ["transition_reference"],
+      "properties": {
+        "transition_reference": { "type": "string", "minLength": 1 },
+        "successor_reference": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}
