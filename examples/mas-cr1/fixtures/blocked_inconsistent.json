@@ -1,0 +1,140 @@
+{
+  "mas_cr1_version": "1",
+  "schema_version": "1",
+  "projection_identity": "0193e8d5-6f5a-7b1c-9d2e-3f4a5b6c7d95",
+  "governed_state_reference": {
+    "reference": "bitgov:governed-state:proving-slice:0008"
+  },
+  "authorization_outcome": "AUTHORIZED",
+  "request_binding": {
+    "principal": {
+      "identity": "bitgov:principal:archivist-042"
+    },
+    "action": {
+      "identity": "bitgov:action:read-record"
+    },
+    "resource": {
+      "identity": "bitgov:resource:record-7f3a"
+    },
+    "context": {
+      "identity": "bitgov:context:reading-room-a"
+    },
+    "scope": {
+      "identity": "bitgov:scope:reading-room-a.read-only"
+    }
+  },
+  "constitutional_applicability": "APPLICABLE",
+  "constitutional_disposition": "BLOCKED",
+  "finality_vector": [
+    {
+      "requirement": "constitutional-evaluation",
+      "state": "REQUIRED_AND_SATISFIED"
+    }
+  ],
+  "finality_aggregate": "FINAL",
+  "lifecycle_state": "ACTIVE",
+  "execution_reliance_effect": "RELIANCE_PERMITTED",
+  "temporal_evaluation_and_currency": {
+    "evaluation_point": "2026-09-30T12:00:00Z",
+    "temporal_bounds_reference": "bitgov:temporal-bounds:proving-slice:0008",
+    "currency_state": "CURRENCY_CURRENT"
+  },
+  "predicate_assertions": {
+    "authorization_bounds_exist": {
+      "value": "TRUE",
+      "determination_reference": "det:bounds:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:bounds:0008"
+      }
+    },
+    "representation_participates": {
+      "value": "FALSE",
+      "determination_reference": "det:representation:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:representation:0008"
+      }
+    },
+    "agent_specific": {
+      "value": "FALSE",
+      "determination_reference": "det:agent:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:agent:0008"
+      }
+    },
+    "appeal_applicability": {
+      "value": "FALSE",
+      "determination_reference": "det:appeal:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:appeal:0008"
+      }
+    },
+    "escalation_applicability": {
+      "value": "FALSE",
+      "determination_reference": "det:escalation:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:escalation:0008"
+      }
+    },
+    "governed_basis_exists": {
+      "value": "TRUE",
+      "determination_reference": "det:basis:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:basis:0008"
+      }
+    },
+    "evaluation_had_scope": {
+      "value": "TRUE",
+      "determination_reference": "det:scope:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:scope:0008"
+      }
+    },
+    "governed_temporal_rules_apply": {
+      "value": "TRUE",
+      "determination_reference": "det:temporal:0008",
+      "lineage": {
+        "rule_reference": "bitgov:rule:reading-room-access",
+        "rule_version": "2026-09-01",
+        "authority_basis": "bitgov:governed:basis:proving-slice-v1",
+        "lineage_reference": "det:temporal:0008"
+      }
+    }
+  },
+  "context_scope_detail": {
+    "context_reference": "bitgov:context:reading-room-a",
+    "scope_reference": "bitgov:scope:reading-room-a.read-only"
+  },
+  "constraints": [
+    {
+      "constraint_type": "TEST_FIXTURE_ONLY_IDENTITY_ALLOWLIST",
+      "statement": "TEST_FIXTURE_ONLY: permit only the bound read-record action",
+      "restriction": {
+        "field": "action",
+        "permitted_identities": [
+          "bitgov:action:read-record"
+        ]
+      }
+    }
+  ]
+}
